@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Розарій</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #rosary-image {
+            position: absolute;
+            object-fit: contain;
+            max-width: 90%;
+            max-height: 90%;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        #prayer-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-left: 8%;
+            text-align: center;
+            transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out;
+            transform-origin: center;
+        }
+        #star-image {
+            position: absolute;
+            width: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <img id="rosary-image" src="roz1.png" alt="Розарій">
+    <div id="prayer-box"></div>
+    <img id="star-image" src="star1.png" alt="Розарій">
+
+    <script>
+        const rosary = document.getElementById('rosary-image');
+        const star = document.getElementById('star-image');
+        const prayerBox = document.getElementById('prayer-box');
+
+        let currentPearlIndex = 0;
+        let touchStarted = false;
+
+const prayers = [
+    "Вірую в Бога, Отця Вседержителя, Творця неба і землі, і в Ісуса Христа, Його Єдиного Сина, Господа нашого, що був зачатий від Духа Святого і народився від Діви Марії, що страждав за Понтія Пилата, був розп’ятий, і помер, і був похований, і зійшов у відхлань. Третього дня воскрес із мертвих, вознісся на небеса і сидить праворуч Бога Отця, Вседержителя, звідки прийде судити мертвих і живих. Вірую в Духа Святого, святу вселенську Церкву, сопричастя Святих, відпущення гріхів, воскресіння плоті, вічне життя. Амінь.",
+    "Отче наш, що єси на небесах, нехай святиться ім’я Твоє, нехай прийде царство Твоє, нехай буде воля Твоя як на небі, так і на землі. Хліб наш насущний дай нам сьогодні і прости нам гріхи наші, як і ми прощаємо винуватцям нашим. І не введи нас у спокусу, але визволи нас від лукавого. Амінь.",
+    "Радуйся, Маріє, благодаті повна, Господь з Тобою! Благословенна Ти між жінками і благословенний плід лона Твого, Ісус. Свята Маріє, Мати Божа, молись за нас , грішних, нині і в годину смерті нашої. Амінь.",
+    "Слава Отцю і Сину і Святому Духу, як було на початку , і нині і повсякчас, і на віки вічні. Амінь.",
+    "О Ісусе, прости нам гріхи наші, спаси нас від вогню пекельного, приведи на небо всі душі, а особливо ті, які найбільше потребують Твого милосердя.",
+    "О Маріє, без первородного гріха зачата, молись за нас, що до Тебе прибігаємо, і за тих, що до Тебе не прибігають, а особливо за ворогів Церкви і за душі, посвячені Тобі!",
+    "Під Твою милість прибігаємо, Пресвята Богородице Діво. Благаннями нашими не погорди у потребах наших, але від бід захисти нас, Діво преславна і благословенна. О Володарко наша, Заступнице наша, Посереднице наша, Утішителько наша! З Сином своїм примири нас, Синові своєму доручи нас, Синові своєму віддай нас. Амінь.",
+    "Слава Отцю і Сину і Святому Духу, як було на початку , і нині і повсякчас, і на віки вічні . Амінь. __________________________ О Ісусе, прости нам гріхи наші, спаси нас від вогню пекельного, приведи на небо всі душі, а особливо ті, які найбільше потребують Твого милосердя. __________________________ О Маріє, без первородного гріха зачата, молись за нас, що до Тебе прибігаємо",
+    "Під Твій захист прибігаємо, Пресвята Богородице Діво. Благаннями нашими не погорди у потребах наших, але від усяких небезпек завжди нас визволи, Діво преславная і благословенная. О Володарко наша, Заступнице наша, Посереднице наша, Утішителько наша! З Сином своїм примири нас, Синові своєму доручи нас, Синові своєму віддай нас.",
+];
+
+const pearlCoordinates = [
+    { x: 71, y: 661, pray: 0 },
+    { x: 75, y: 584, pray: 1 },
+    { x: 74, y: 537, pray: 2 },
+    { x: 75, y: 498, pray: 2 },
+    { x: 85, y: 458, pray: 2 },
+   // { x: 119, y: 416, pray: 1 },
+    { x: 154, y: 375, pray: 1 },
+    { x: 100, y: 361, pray: 2 },
+    { x: 62, y: 351, pray: 2 },
+    { x: 36, y: 325, pray: 2 },
+    { x: 27, y: 285, pray: 2 },
+    { x: 27, y: 243, pray: 2 },
+    { x: 27, y: 206, pray: 2 },
+    { x: 26, y: 167, pray: 2 },
+    { x: 29, y: 128, pray: 2 },
+    { x: 41, y: 90, pray: 2 },
+    { x: 64, y: 60, pray: 2 },
+    { x: 115, y: 40, pray: 7 }, 
+    { x: 115, y: 40, pray: 1 }, //b2
+    { x: 178, y: 41, pray: 2 },
+    { x: 218, y: 41, pray: 2 },
+    { x: 258, y: 41, pray: 2 },
+    { x: 297, y: 42, pray: 2 },
+    { x: 336, y: 41, pray: 2 },
+    { x: 375, y: 42, pray: 2 },
+    { x: 414, y: 41, pray: 2 },
+    { x: 455, y: 42, pray: 2 },
+    { x: 493, y: 42, pray: 2 },
+    { x: 533, y: 42, pray: 2 },
+    { x: 580, y: 68, pray: 7 },
+    { x: 580, y: 68, pray: 1 }, //b3
+    { x: 599, y: 128, pray: 2 },
+    { x: 599, y: 167, pray: 2 },
+    { x: 599, y: 206, pray: 2 },
+    { x: 599, y: 246, pray: 2 },
+    { x: 600, y: 286, pray: 2 },
+    { x: 599, y: 324, pray: 2 },
+    { x: 599, y: 364, pray: 2 },
+    { x: 599, y: 402, pray: 2 },
+    { x: 600, y: 442, pray: 2 },
+    { x: 599, y: 480, pray: 2 },
+    { x: 599, y: 542, pray: 7 },
+    { x: 599, y: 542, pray: 1 }, //b4
+    { x: 599, y: 601, pray: 2 },
+    { x: 599, y: 639, pray: 2 },
+    { x: 597, y: 680, pray: 2 },
+    { x: 586, y: 717, pray: 2 },
+    { x: 555, y: 742, pray: 2 },
+    { x: 517, y: 743, pray: 2 },
+    { x: 478, y: 743, pray: 2 },
+    { x: 438, y: 743, pray: 2 },
+    { x: 399, y: 743, pray: 2 },
+    { x: 359, y: 743, pray: 2 },
+    { x: 301, y: 743, pray: 7 },
+    { x: 301, y: 743, pray: 1 }, //b5
+    { x: 242, y: 743, pray: 2 },
+    { x: 203, y: 736, pray: 2 },
+    { x: 178, y: 707, pray: 2 },
+    { x: 173, y: 667, pray: 2 },
+    { x: 172, y: 627, pray: 2 },
+    { x: 172, y: 588, pray: 2 },
+    { x: 173, y: 549, pray: 2 },
+    { x: 172, y: 510, pray: 2 },
+    { x: 173, y: 471, pray: 2 },
+    { x: 173, y: 430, pray: 2 },
+    { x: 154, y: 376, pray: 7 },
+    { x: 154, y: 376, pray: 6 },
+    //{ x: 119, y: 419, pray: 8 },
+    //{ x: 85, y: 459, pray: 0 },
+    //{ x: 75, y: 499, pray: 1 },
+    //{ x: 75, y: 538, pray: 2 },
+    //{ x: 74, y: 584, pray: 3 },
+    //{ x: 72, y: 662, pray: 7 }
+];
+
+        function showPrayer() {
+            prayerBox.textContent = prayers[pearlCoordinates[currentPearlIndex].pray];
+        }
+
+        function highlightPearl() {
+            const pearl = pearlCoordinates[currentPearlIndex];
+            const rosaryRect = rosary.getBoundingClientRect();
+            const scaleX = rosaryRect.width / rosary.naturalWidth;
+            const scaleY = rosaryRect.height / rosary.naturalHeight;
+            const scale = Math.min(scaleX, scaleY);
+            star.style.left = rosaryRect.left + pearl.x * scaleX - star.offsetWidth / 2 + window.pageXOffset + 'px';
+            star.style.top = rosaryRect.top + pearl.y * scaleY - star.offsetHeight / 2 + window.pageYOffset + 'px';
+            prayerBox.style.fontSize = `${29 * scale}px`;
+            prayerBox.style.padding = `${20 * scale}px`;
+        }
+
+        function nextPrayer() {
+            prayerBox.style.transform = 'translate(-50%, -50%) scale(0)';
+            prayerBox.style.opacity = '0';
+
+            setTimeout(() => {
+                currentPearlIndex = (currentPearlIndex + 1) % pearlCoordinates.length;
+                showPrayer();
+                highlightPearl();
+                prayerBox.style.transform = 'translate(-50%, -50%) scale(1)';
+                prayerBox.style.opacity = '1';
+            }, 250);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                nextPrayer();
+            }
+        });
+
+        window.addEventListener('resize', highlightPearl);
+
+        window.addEventListener('touchstart', function(event) {
+            touchStarted = true;
+            nextPrayer();
+            event.preventDefault();
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!touchStarted) {
+                nextPrayer();
+            }
+            touchStarted = false;
+        });
+
+        window.addEventListener('load', function() {
+            highlightPearl();
+            showPrayer();
+        });
+    </script>
+</body>
+</html>
